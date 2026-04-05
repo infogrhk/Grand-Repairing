@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>修復工藝 | 循環工程與資產增值專家</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #fdfbf7; 
+            color: #4a4a4a;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        .section-transition {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .slider-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            overflow: hidden;
+            border-radius: 0.5rem;
+            cursor: ew-resize;
+            background: #e5e7eb;
+        }
+        
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 20;
+        }
+        
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 320px;
+            width: 4px;
+            background: #ffffff;
+            cursor: ew-resize;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            border: 1px solid #d1d5db;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- 導航欄 -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-2xl font-bold text-[#3c5e4b]">♻️ 修復工藝</span>
+                </div>
+                <div class="hidden sm:flex items-center space-x-8">
+                    <button onclick="scrollToSection('impact')" class="text-gray-600 hover:text-[#3c5e4b] font-medium">環保效益</button>
+                    <button onclick="scrollToSection('services')" class="text-gray-600 hover:text-[#3c5e4b] font-medium">專業服務</button>
+                    <button onclick="scrollToSection('demo')" class="text-gray-600 hover:text-[#3c5e4b] font-medium">工藝展示</button>
+                    <button onclick="scrollToSection('contact')" class="bg-[#3c5e4b] text-white px-4 py-2 rounded-md hover:bg-[#2e4a3a] transition">立即評估</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 英雄區塊 -->
+    <header class="relative bg-[#3c5e4b] text-white overflow-hidden">
+        <div class="absolute inset-0 opacity-10 pattern-grid-lg"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center relative z-10">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6 tracking-tight">
+                賦予物件二次生命<br>
+                <span class="text-[#d4a373]">循環工程的實踐者</span>
+            </h1>
+            <p class="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto mb-10 font-light">
+                拒絕不必要的丟棄。我們透過精密修復技術，為您的資產延長壽命，實現真正的環保與成本效益。
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <button onclick="scrollToSection('impact')" class="bg-white text-[#3c5e4b] px-8 py-3 rounded-lg font-bold text-lg hover:bg-gray-100 transition shadow-lg">
+                    了解 ESG 價值 📉
+                </button>
+                <button onclick="scrollToSection('services')" class="border-2 border-white text-white px-8 py-3 rounded-lg font-bold text-lg hover:bg-white/10 transition">
+                    探索服務方案 🛠️
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 效益分析數據庫 -->
+    <section id="impact" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-[#3c5e4b] mb-4">減碳革命：從「維修」開始</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto text-lg">
+                    根據我們的實際工程數據，修復不僅是為了美觀，更是企業達成 ESG 目標與降低營運成本的關鍵策略。
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <!-- 雷達圖：ESG 效益 -->
+                <div class="bg-[#fdfbf7] p-6 rounded-xl shadow-inner border border-gray-100">
+                    <h3 class="text-xl font-bold text-center mb-6 text-gray-700">循環工程效益分析</h3>
+                    <div class="chart-container">
+                        <canvas id="impactChart"></canvas>
+                    </div>
+                    <div class="mt-4 text-sm text-gray-500 text-center">
+                        <span class="inline-block px-2">📉 80% 材料節省</span>
+                        <span class="inline-block px-2">💰 60% 成本降低</span>
+                        <span class="inline-block px-2">♻️ 100% 廢料減少</span>
+                    </div>
+                </div>
+
+                <!-- 長條圖：效率對比 -->
+                <div class="bg-[#fdfbf7] p-6 rounded-xl shadow-inner border border-gray-100">
+                    <h3 class="text-xl font-bold text-center mb-6 text-gray-700">傳統更換 vs. 精密修復</h3>
+                    <div class="chart-container">
+                        <canvas id="comparisonChart"></canvas>
+                    </div>
+                    <div class="mt-4 p-4 bg-green-50 rounded-lg text-sm text-green-800 border-l-4 border-green-500">
+                        <strong>關鍵數據：</strong> 修復工程僅需 4 小時，相比傳統更換需時 1 個月，大幅降低停機時間。
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 服務分頁 -->
+    <section id="services" class="py-20 bg-[#f4f4f4]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-[#3c5e4b] mb-4">專業服務方案</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto text-lg">
+                    無論是商業物業管理還是私人住宅，我們都提供針對性的界面還原方案。
+                </p>
+            </div>
+
+            <div class="flex justify-center mb-10">
+                <div class="bg-white p-1 rounded-full shadow-md inline-flex">
+                    <button id="tab-b2b" onclick="switchTab('b2b')" class="px-8 py-3 rounded-full text-sm md:text-base font-bold transition-all bg-[#3c5e4b] text-white shadow-sm">
+                        🏢 物業管理 (B2B)
+                    </button>
+                    <button id="tab-b2c" onclick="switchTab('b2c')" class="px-8 py-3 rounded-full text-sm md:text-base font-bold text-gray-500 hover:text-[#3c5e4b] transition-all">
+                        🏠 自置物業 (B2C)
+                    </button>
+                </div>
+            </div>
+
+            <div id="service-content" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 section-transition">
+                <!-- 由 JavaScript 注入內容 -->
+            </div>
+        </div>
+    </section>
+
+    <!-- 互動演示 (Canvas) -->
+    <section id="demo" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <div class="inline-block px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-bold mb-4">工藝實證</div>
+                    <h2 class="text-3xl font-bold text-[#3c5e4b] mb-6">從缺陷到完美：<br>無痕修復模擬展示</h2>
+                    <p class="text-gray-600 mb-6 text-lg leading-relaxed">
+                        我們的**界面重構工藝**能在不拆卸的情況下，消除深層刮痕並還原原廠紋理。
+                    </p>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-start"><span class="text-green-500 mr-3 text-xl">✓</span><strong>精密研磨：</strong> 去除氧化層與刮痕。</li>
+                        <li class="flex items-start"><span class="text-green-500 mr-3 text-xl">✓</span><strong>紋理重製：</strong> 重新拉絲或拋光，完美融合。</li>
+                        <li class="flex items-start"><span class="text-green-500 mr-3 text-xl">✓</span><strong>抗污塗層：</strong> 修復後保護層，延長壽命。</li>
+                    </ul>
+                </div>
+
+                <div class="relative bg-gray-100 p-4 rounded-xl shadow-lg border border-gray-200">
+                    <div class="absolute top-6 left-6 z-10 bg-black/50 text-white px-3 py-1 rounded text-sm">修復前</div>
+                    <div class="absolute top-6 right-6 z-10 bg-[#3c5e4b]/80 text-white px-3 py-1 rounded text-sm">修復後</div>
+                    
+                    <div class="slider-container" id="canvas-wrapper">
+                        <canvas id="repairCanvas" class="w-full h-full object-cover rounded-lg"></canvas>
+                        <input type="range" min="0" max="100" value="50" id="repairSlider" oninput="drawComparison(this.value)">
+                        <div id="slider-line" class="absolute top-0 bottom-0 w-1 bg-white shadow pointer-events-none" style="left: 50%;">
+                            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-400">↔</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 頁尾與行動呼籲 -->
+    <footer id="contact" class="bg-[#2c3e50] text-white py-16">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold mb-6">您的資產值得更好的對待</h2>
+            <p class="text-gray-300 mb-8 text-lg">立即聯絡我們，獲得免費初步評估。</p>
+            <div class="flex flex-col sm:flex-row justify-center gap-6">
+                <a href="#" class="bg-[#d4a373] text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-[#c29363] transition shadow-lg">📱 預約評估</a>
+                <a href="#" class="border border-white text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-white/10 transition">📧 索取案例</a>
+            </div>
+            <div class="mt-12 pt-8 border-t border-gray-700 text-sm text-gray-400">
+                <p>&copy; 2024 修復工藝公司. 致力於循環經濟與永續發展</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 服務資料庫
+        const servicesData = {
+            b2b: [
+                { title: "升降機無痕修復", icon: "🏗️", tags: ["物業管理", "不鏽鋼"], desc: "無需拆卸，大幅縮短停機時間。精密還原紋理，節省 70% 成本。", highlight: "節省 70% 成本" },
+                { title: "公共設施還原", icon: "🏢", tags: ["大堂", "石材"], desc: "商場或屋苑大堂翻新，提供石材修補、金屬抗氧化處理。", highlight: "低干擾施工" },
+                { title: "企業 ESG 夥伴", icon: "🌍", tags: ["減碳", "環保"], desc: "協助達成減碳目標，修復工程節省 80% 材料消耗。", highlight: "永續發展指標" }
+            ],
+            b2c: [
+                { title: "珍貴傢俱修復", icon: "🪑", tags: ["木器", "古董"], desc: "實木大門、古董傢俱修復，保留物件歷史與情感價值。", highlight: "原廠色澤還原" },
+                { title: "家居石材地磚", icon: "🏠", tags: ["雲石", "地磚"], desc: "地板凹痕、雲石裂縫修復。精準調色，視覺無縫結合。", highlight: "免拆除零粉塵" },
+                { title: "大門鋁窗翻新", icon: "🚪", tags: ["鋁質", "大門"], desc: "解決磨損與撞擊痕跡。比全屋裝修更經濟、更環保。", highlight: "即日完工" }
+            ]
+        };
+
+        // 初始化圖表
+        function initCharts() {
+            const impactCtx = document.getElementById('impactChart').getContext('2d');
+            new Chart(impactCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['材料節省', '成本效益', '施工速度', '廢料減少', '資產壽命'],
+                    datasets: [{
+                        label: '修復工藝效益',
+                        data: [85, 60, 90, 100, 80],
+                        fill: true,
+                        backgroundColor: 'rgba(60, 94, 75, 0.2)',
+                        borderColor: 'rgb(60, 94, 75)',
+                        pointBackgroundColor: 'rgb(60, 94, 75)'
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { r: { suggestedMin: 0, suggestedMax: 100, ticks: { display: false } } }, plugins: { legend: { display: false } } }
+            });
+
+            const compCtx = document.getElementById('comparisonChart').getContext('2d');
+            new Chart(compCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['時間消耗 (小時)', '工程成本 (%)'],
+                    datasets: [
+                        { label: '傳統更換', data: [720, 100], backgroundColor: 'rgba(209, 213, 219, 0.8)' },
+                        { label: '精密修復', data: [4, 30], backgroundColor: 'rgba(212, 163, 115, 0.8)' }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+            });
+        }
+
+        // 服務分頁邏輯
+        function renderServices(type) {
+            const container = document.getElementById('service-content');
+            container.style.opacity = '0';
+            setTimeout(() => {
+                container.innerHTML = servicesData[type].map(item => `
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 card-hover flex flex-col h-full">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-4xl">${item.icon}</span>
+                            <span class="bg-green-50 text-green-700 text-xs px-2 py-1 rounded-full font-bold">${item.highlight}</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">${item.title}</h3>
+                        <div class="mb-4">${item.tags.map(tag => `<span class="inline-block bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded mr-1 mb-1">#${tag}</span>`).join('')}</div>
+                        <p class="text-gray-600 text-sm flex-grow leading-relaxed">${item.desc}</p>
+                        <button class="mt-4 text-[#3c5e4b] font-bold text-sm hover:underline">了解詳情 →</button>
+                    </div>
+                `).join('');
+                container.style.opacity = '1';
+            }, 300);
+        }
+
+        function switchTab(type) {
+            const btnB2B = document.getElementById('tab-b2b');
+            const btnB2C = document.getElementById('tab-b2c');
+            if (type === 'b2b') {
+                btnB2B.className = 'px-8 py-3 rounded-full text-sm md:text-base font-bold transition-all bg-[#3c5e4b] text-white shadow-sm';
+                btnB2C.className = 'px-8 py-3 rounded-full text-sm md:text-base font-bold text-gray-500 hover:text-[#3c5e4b] transition-all';
+            } else {
+                btnB2B.className = 'px-8 py-3 rounded-full text-sm md:text-base font-bold text-gray-500 hover:text-[#3c5e4b] transition-all';
+                btnB2C.className = 'px-8 py-3 rounded-full text-sm md:text-base font-bold transition-all bg-[#d4a373] text-white shadow-sm';
+            }
+            renderServices(type);
+        }
+
+        // Canvas 修復模擬
+        const canvas = document.getElementById('repairCanvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+
+        function resizeCanvas() {
+            const container = document.getElementById('canvas-wrapper');
+            width = container.offsetWidth;
+            height = container.offsetHeight;
+            canvas.width = width;
+            canvas.height = height;
+            drawComparison(document.getElementById('repairSlider').value);
+        }
+
+        function drawMetalTexture(ctx, w, h, isDamaged) {
+            const gradient = ctx.createLinearGradient(0, 0, w, h);
+            gradient.addColorStop(0, '#9ca3af'); gradient.addColorStop(0.5, '#d1d5db'); gradient.addColorStop(1, '#9ca3af');
+            ctx.fillStyle = gradient; ctx.fillRect(0, 0, w, h);
+            ctx.globalAlpha = 0.1;
+            for (let i = 0; i < 500; i++) {
+                ctx.beginPath(); ctx.moveTo(Math.random() * w, 0); ctx.lineTo(Math.random() * w, h);
+                ctx.strokeStyle = '#000'; ctx.stroke();
+            }
+            ctx.globalAlpha = 1.0;
+            if (isDamaged) {
+                ctx.strokeStyle = '#4b5563'; ctx.lineWidth = 2;
+                for (let i = 0; i < 30; i++) {
+                    ctx.beginPath(); const x = Math.random() * w, y = Math.random() * h;
+                    ctx.moveTo(x, y); ctx.lineTo(x + (Math.random() - 0.5) * 100, y + (Math.random() - 0.5) * 100); ctx.stroke();
+                }
+            } else {
+                const shine = ctx.createLinearGradient(0, 0, w, 0);
+                shine.addColorStop(0, 'rgba(255,255,255,0)'); shine.addColorStop(0.5, 'rgba(255,255,255,0.4)'); shine.addColorStop(1, 'rgba(255,255,255,0)');
+                ctx.fillStyle = shine; ctx.fillRect(0, 0, w, h);
+            }
+        }
+
+        function drawComparison(val) {
+            const splitX = (val / 100) * width;
+            ctx.save(); ctx.beginPath(); ctx.rect(0, 0, splitX, height); ctx.clip(); drawMetalTexture(ctx, width, height, true); ctx.restore();
+            ctx.save(); ctx.beginPath(); ctx.rect(splitX, 0, width - splitX, height); ctx.clip(); drawMetalTexture(ctx, width, height, false); ctx.restore();
+            document.getElementById('slider-line').style.left = val + '%';
+        }
+
+        function scrollToSection(id) { document.getElementById(id).scrollIntoView({ behavior: 'smooth' }); }
+
+        window.addEventListener('load', () => { initCharts(); renderServices('b2b'); resizeCanvas(); });
+        window.addEventListener('resize', resizeCanvas);
+    </script>
+</body>
+</html>
